@@ -8,6 +8,8 @@ const app = express();
 // JSON 형식의 요청 본문(body)을 파싱하기 위해 사용
 // 클라이언트가 POST 요청을 보낼 때, JSON 형식으로 데이터를 전송하면 Express 애플리케이션이 이를 쉽게 이해하고 JavaScript 객체로 변환
 app.use(express.json());
+// URL-encoded 형식의 (form-data 같은 key, value 쌍) 요청 본문을 파싱하기 위해 사용
+app.use(express.urlencoded({ entended: false }));
 
 //routes
 app.get('/', (req, res) => {
@@ -42,6 +44,22 @@ app.get('/products/:id', async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
     res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.put('/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findByIdAndUpdate(id, req.body);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: `cannot find any product with ID ${id}` });
+    }
+    const updatedProduct = await Product.findById(id);
+    res.status(200).json(updatedProduct);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
