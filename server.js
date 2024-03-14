@@ -28,6 +28,25 @@ app.post('/product', async (req, res) => {
   }
 });
 
+app.get('/products', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get('/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 mongoose
   .connect(
     // net/ 다음에 콜렉션 이름을 써주세요 안 쓰면 test라는 이름의 콜렉션이 생김
